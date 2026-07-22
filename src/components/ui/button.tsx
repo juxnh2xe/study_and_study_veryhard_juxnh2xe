@@ -34,7 +34,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-semibold rounded-[0.75rem] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A0F] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none cursor-pointer';
+      'inline-flex items-center justify-center font-semibold rounded-[0.75rem] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A0F] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none cursor-pointer break-keep whitespace-nowrap shrink-0';
 
     const variants = {
       primary:
@@ -73,11 +73,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin text-current" aria-hidden="true" />
+          <Loader2 className="h-4 w-4 animate-spin text-current shrink-0" aria-hidden="true" />
         ) : (
           leftIcon
         )}
-        <span>{children}</span>
+        <span className="break-keep whitespace-nowrap">{children}</span>
         {!isLoading && rightIcon}
       </motion.button>
     );

@@ -252,8 +252,8 @@ export const ProfileTab: React.FC = () => {
             <User className="h-7 w-7" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-[#F8FAFC]">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg font-bold text-[#F8FAFC] break-keep whitespace-nowrap">
                 {user?.user_metadata?.name || profile.name}
               </h1>
               <Badge variant="sky" size="sm">

@@ -48,7 +48,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               aria-label={`${item.label} 탭으로 이동`}
               onClick={() => onChangeTab(item.id)}
               className={cn(
-                'relative flex flex-col items-center justify-center min-h-[44px] py-2 px-4 rounded-full text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9]',
+                'relative flex flex-col items-center justify-center min-h-[44px] py-1.5 px-3 sm:px-4 rounded-full text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9]',
                 isActive ? 'text-[#0EA5E9]' : 'text-[#64748B] hover:text-[#94A3B8]'
               )}
             >
@@ -59,8 +59,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}
-              <Icon className="h-5 w-5 mb-0.5 z-10" aria-hidden="true" />
-              <span className="z-10 text-[11px]">{item.label}</span>
+              <Icon className="h-5 w-5 mb-0.5 z-10 shrink-0" aria-hidden="true" />
+              <span className="z-10 text-[11px] whitespace-nowrap">{item.label}</span>
             </button>
           );
         })}

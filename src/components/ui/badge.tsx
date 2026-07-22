@@ -18,7 +18,7 @@ export const Badge: React.FC<BadgeProps> = ({
   icon,
   className,
 }) => {
-  const baseStyles = 'inline-flex items-center font-semibold rounded-full select-none';
+  const baseStyles = 'inline-flex items-center font-semibold rounded-full select-none whitespace-nowrap shrink-0';
 
   const variants = {
     sky: 'bg-[rgba(14,165,233,0.15)] text-[#38BDF8] border border-[rgba(14,165,233,0.3)]',
@@ -36,8 +36,8 @@ export const Badge: React.FC<BadgeProps> = ({
 
   return (
     <span className={cn(baseStyles, variants[variant], sizes[size], className)}>
-      {icon && <span className="flex items-center">{icon}</span>}
-      <span>{children}</span>
+      {icon && <span className="flex items-center shrink-0">{icon}</span>}
+      <span className="whitespace-nowrap">{children}</span>
     </span>
   );
 };

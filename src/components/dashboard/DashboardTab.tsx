@@ -97,15 +97,15 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       {/* Header Greeting & Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#94A3B8] mb-1">
-            <Calendar className="h-3.5 w-3.5 text-[#0EA5E9]" />
-            <span>{new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#94A3B8] mb-1 whitespace-nowrap break-keep">
+            <Calendar className="h-3.5 w-3.5 text-[#0EA5E9] shrink-0" />
+            <span className="whitespace-nowrap">{new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC]">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC] whitespace-nowrap break-keep">
             {userName} 님, 좋은 아침입니다 🌅
           </h1>
-          <p className="text-xs text-[#94A3B8] mt-0.5">
-            목표 대학: <span className="text-[#38BDF8]">{profile.targetUniversity}</span>
+          <p className="text-xs text-[#94A3B8] mt-0.5 whitespace-nowrap break-keep">
+            목표 대학: <span className="text-[#38BDF8] font-bold">{profile.targetUniversity}</span>
           </p>
         </div>
 
@@ -125,7 +125,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             className="flex items-center justify-between border-[#0EA5E9]/40 bg-gradient-to-r from-[rgba(14,165,233,0.12)] to-transparent shrink-0 min-w-[150px]"
           >
             <div>
-              <span className="text-[11px] font-medium text-[#94A3B8] block truncate max-w-[90px]">
+              <span className="text-[11px] font-medium text-[#94A3B8] block truncate max-w-[90px] whitespace-nowrap">
                 {profile.dDay.title}
               </span>
               <div className="text-lg font-extrabold text-[#38BDF8] whitespace-nowrap">
@@ -147,15 +147,15 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <div className="absolute top-0 right-0 w-32 h-32 bg-[rgba(14,165,233,0.1)] rounded-full blur-2xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0EA5E9]">
-              <Flame className="h-4 w-4 animate-pulse" />
-              <span>새벽 몰입 타이머 준비 완료</span>
+            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0EA5E9] whitespace-nowrap">
+              <Flame className="h-4 w-4 animate-pulse shrink-0" />
+              <span className="whitespace-nowrap">새벽 몰입 타이머 준비 완료</span>
             </div>
-            <h2 className="text-lg font-bold text-[#F8FAFC]">
+            <h2 className="text-lg font-bold text-[#F8FAFC] break-keep">
               오늘의 몰입 세션을 시작해볼까요?
             </h2>
-            <p className="text-xs text-[#94A3B8]">
-              목표 6시간 중 <span className="text-[#F8FAFC] font-semibold">{formatHoursMins(todayMinutes)}</span> 달성 중 ({goalPercentage}%)
+            <p className="text-xs text-[#94A3B8] break-keep">
+              목표 6시간 중 <span className="text-[#F8FAFC] font-semibold whitespace-nowrap">{formatHoursMins(todayMinutes)}</span> 달성 중 ({goalPercentage}%)
             </p>
           </div>
           <Button
@@ -163,7 +163,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             size="lg"
             leftIcon={<Play className="h-4 w-4 fill-current" />}
             onClick={onStartFocus}
-            className="shrink-0 shadow-[0_4px_20px_rgba(14,165,233,0.4)]"
+            className="shrink-0 shadow-[0_4px_20px_rgba(14,165,233,0.4)] whitespace-nowrap"
           >
             Focus 시작하기
           </Button>
@@ -246,10 +246,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                     )}
                   </div>
                   <div>
-                    <h4 className={`text-xs font-semibold ${routine.isCompleted ? 'line-through text-[#64748B]' : 'text-[#F8FAFC]'}`}>
+                    <h4 className={`text-xs font-semibold break-keep ${routine.isCompleted ? 'line-through text-[#64748B]' : 'text-[#F8FAFC]'}`}>
                       {routine.title}
                     </h4>
-                    <span className="text-[10px] text-[#94A3B8]">
+                    <span className="text-[10px] text-[#94A3B8] whitespace-nowrap">
                       {routine.subject} • {routine.targetTimeMinutes}분
                     </span>
                   </div>

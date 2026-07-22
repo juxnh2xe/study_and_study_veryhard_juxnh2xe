@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
 import { StatCard } from '../common/stat-card';
 import { SectionTitle } from '../common/section-title';
@@ -14,8 +13,7 @@ import { StudyHeatmap } from '../common/study-heatmap';
 import { GoalManager } from '../common/goal-manager';
 import { ExamManager } from '../common/exam-manager';
 import { FocusGarden } from '../common/focus-garden';
-import { Flame, Play, Calendar, Clock, Award, BookOpen, Plus, CheckCircle2, Circle, Search, Target } from 'lucide-react';
-import { MOCK_USER } from '@/constants/mock-data';
+import { Flame, Play, Calendar, Clock, Award, BookOpen, Plus, CheckCircle2, Circle, Search } from 'lucide-react';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useStudyStats } from '@/hooks/useStudyStats';
 import { useAuth } from '@/context/AuthContext';
@@ -40,10 +38,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const { showToast } = useToast();
 
   const [profile, setProfile] = useState<UserProfile>({
-    name: MOCK_USER.name,
+    name: '학생',
     grade: '3',
-    targetUniversity: MOCK_USER.targetUniversity,
-    dDay: MOCK_USER.dDay,
+    targetUniversity: '목표 대학 설정 필요',
+    dDay: {
+      title: 'D-Day 목표',
+      targetDate: '2026-11-19',
+    },
     dailyTargetMinutes: 360,
     themePreference: 'dark_sky',
     dynamicThemeEnabled: true,
@@ -58,8 +59,17 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   }, [user]);
 
   const userName = user?.user_metadata?.name || profile.name || '학생';
-  const todayTargetMinutes = profile.dailyTargetMinutes || 360; // 6 hours
+  const todayTargetMinutes = profile.dailyTargetMinutes || 360;
   const goalPercentage = Math.min(100, Math.round((todayMinutes / todayTargetMinutes) * 100));
+
+  const calculateDaysRemaining = (targetDateStr: string) => {
+    const target = new Date(targetDateStr).getTime();
+    const today = new Date().setHours(0, 0, 0, 0);
+    const diff = target - today;
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
+
+  const daysLeft = calculateDaysRemaining(profile.dDay.targetDate);
 
   const formatHoursMins = (totalMins: number) => {
     const h = Math.floor(totalMins / 60);
@@ -99,31 +109,31 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            leftIcon={<Search className="h-4 w-4" />}
+        {/* Clean Single Line Search Button & D-Day Card */}
+        <div className="flex items-center gap-2.5 shrink-0 flex-nowrap">
+          <button
             onClick={onOpenSearch}
+            className="h-10 px-3.5 rounded-xl border border-[#1E293B] bg-[#0B0E17] text-[#F8FAFC] text-xs font-semibold hover:border-[#0EA5E9] transition-all flex items-center gap-2 shrink-0 whitespace-nowrap"
           >
-            검색
-          </Button>
+            <Search className="h-4 w-4 text-[#0EA5E9] shrink-0" />
+            <span className="whitespace-nowrap">검색</span>
+          </button>
 
           <Card
             variant="glass"
             padding="sm"
-            className="flex items-center justify-between border-[#0EA5E9]/40 bg-gradient-to-r from-[rgba(14,165,233,0.12)] to-transparent sm:min-w-[170px]"
+            className="flex items-center justify-between border-[#0EA5E9]/40 bg-gradient-to-r from-[rgba(14,165,233,0.12)] to-transparent shrink-0 min-w-[150px]"
           >
             <div>
-              <span className="text-[11px] font-medium text-[#94A3B8]">
+              <span className="text-[11px] font-medium text-[#94A3B8] block truncate max-w-[90px]">
                 {profile.dDay.title}
               </span>
-              <div className="text-xl font-extrabold text-[#38BDF8]">
-                D-{MOCK_USER.dDay.daysRemaining}
+              <div className="text-lg font-extrabold text-[#38BDF8] whitespace-nowrap">
+                D-{daysLeft}
               </div>
             </div>
-            <div className="p-2 rounded-full bg-[rgba(14,165,233,0.2)] text-[#0EA5E9]">
-              <Award className="h-5 w-5" />
+            <div className="p-2 rounded-full bg-[rgba(14,165,233,0.2)] text-[#0EA5E9] shrink-0 ml-2">
+              <Award className="h-4 w-4" />
             </div>
           </Card>
         </div>
@@ -175,14 +185,12 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <StatCard
           label="이번 주 누적"
           value={formatHoursMins(weeklyMinutes)}
-          trend={{ value: '15%', isPositive: true }}
           accentColor="#10B981"
           icon={<Calendar className="h-4 w-4" />}
         />
         <StatCard
           label="연속 학습 스트릭"
           value={`${streakDays}일 째`}
-          subvalue="최고 21일"
           accentColor="#F59E0B"
           icon={<Flame className="h-4 w-4 text-[#F59E0B]" />}
           className="col-span-2 sm:col-span-1"
@@ -210,42 +218,48 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           }
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {routines.slice(0, 4).map((routine) => (
-            <Card
-              key={routine.id}
-              variant="interactive"
-              padding="sm"
-              onClick={() => handleToggleRoutine(routine.id, routine.title, routine.isCompleted)}
-              className="flex items-center justify-between select-none"
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`p-1 rounded-full ${
-                    routine.isCompleted
-                      ? 'text-[#10B981]'
-                      : 'text-[#64748B]'
-                  }`}
-                >
-                  {routine.isCompleted ? (
-                    <CheckCircle2 className="h-5 w-5 fill-[rgba(16,185,129,0.2)]" />
-                  ) : (
-                    <Circle className="h-5 w-5" />
-                  )}
-                </div>
-                <div>
-                  <h4 className={`text-xs font-semibold ${routine.isCompleted ? 'line-through text-[#64748B]' : 'text-[#F8FAFC]'}`}>
-                    {routine.title}
-                  </h4>
-                  <span className="text-[10px] text-[#94A3B8]">
-                    {routine.subject} • {routine.targetTimeMinutes}분
-                  </span>
-                </div>
-              </div>
-              <Badge variant={routine.isCompleted ? 'success' : 'neutral'} size="sm">
-                {routine.isCompleted ? '완료' : '진행중'}
-              </Badge>
+          {(!routines || routines.length === 0) ? (
+            <Card variant="flat" padding="sm" className="col-span-full py-6 text-center text-xs text-[#94A3B8] border-dashed border-[#1E293B]">
+              등록된 루틴이 없습니다. [루틴] 탭에서 나만의 공부 습관을 등록해보세요!
             </Card>
-          ))}
+          ) : (
+            routines.slice(0, 4).map((routine) => (
+              <Card
+                key={routine.id}
+                variant="interactive"
+                padding="sm"
+                onClick={() => handleToggleRoutine(routine.id, routine.title, routine.isCompleted)}
+                className="flex items-center justify-between select-none"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`p-1 rounded-full ${
+                      routine.isCompleted
+                        ? 'text-[#10B981]'
+                        : 'text-[#64748B]'
+                    }`}
+                  >
+                    {routine.isCompleted ? (
+                      <CheckCircle2 className="h-5 w-5 fill-[rgba(16,185,129,0.2)]" />
+                    ) : (
+                      <Circle className="h-5 w-5" />
+                    )}
+                  </div>
+                  <div>
+                    <h4 className={`text-xs font-semibold ${routine.isCompleted ? 'line-through text-[#64748B]' : 'text-[#F8FAFC]'}`}>
+                      {routine.title}
+                    </h4>
+                    <span className="text-[10px] text-[#94A3B8]">
+                      {routine.subject} • {routine.targetTimeMinutes}분
+                    </span>
+                  </div>
+                </div>
+                <Badge variant={routine.isCompleted ? 'success' : 'neutral'} size="sm">
+                  {routine.isCompleted ? '완료' : '진행중'}
+                </Badge>
+              </Card>
+            ))
+          )}
         </div>
       </div>
 
@@ -269,7 +283,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             title="인출 약점 &amp; 오답 노트"
             description="복습이 필요한 취약 파트 점검"
             icon={<BookOpen className="h-5 w-5 text-[#0EA5E9]" />}
-            badgeText="2건 복습 필요"
             onClick={() => onNavigateTab('profile')}
           />
           <QuickActionCard

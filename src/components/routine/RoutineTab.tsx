@@ -36,6 +36,12 @@ export const RoutineTab: React.FC = () => {
   const [newCategory, setNewCategory] = useState<SubjectCategory>('math');
   const [newTargetMinutes, setNewTargetMinutes] = useState(45);
 
+  const maxStreak = (routines || []).reduce((max, r) => Math.max(max, r.streak || 0), 0);
+  const totalTargetMins = (routines || []).reduce((sum, r) => sum + (r.targetTimeMinutes || 0), 0);
+  const targetHours = Math.floor(totalTargetMins / 60);
+  const targetMins = totalTargetMins % 60;
+  const targetTimeDisplay = targetHours > 0 ? `${targetHours}시간 ${targetMins}분` : `${targetMins}분`;
+
   const handleToggle = (id: string, title: string, isCompleted: boolean) => {
     toggleRoutine(id);
     showToast({
@@ -151,15 +157,15 @@ export const RoutineTab: React.FC = () => {
       {/* Routine Stats Grid */}
       <div className="grid grid-cols-2 gap-3.5">
         <StatCard
-          label="루틴 스트릭"
-          value="14일 연속"
+          label="루틴 최고 스트릭"
+          value={`${maxStreak}일 연속`}
           subvalue="달성 중"
           accentColor="#F59E0B"
           icon={<Flame className="h-4 w-4 text-[#F59E0B]" />}
         />
         <StatCard
           label="오늘 목표 시간"
-          value="3시간 45분"
+          value={targetTimeDisplay}
           subvalue="루틴 총합"
           accentColor="#0EA5E9"
           icon={<Target className="h-4 w-4" />}
@@ -170,80 +176,86 @@ export const RoutineTab: React.FC = () => {
       <div className="space-y-3">
         <SectionTitle title="오늘의 루틴 체크리스트" subtitle="카드를 클릭해 체크하세요" />
         <div className="space-y-2.5">
-          {routines.map((routine) => (
-            <motion.div
-              key={routine.id}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => handleToggle(routine.id, routine.title, routine.isCompleted)}
-            >
-              <Card
-                variant="interactive"
-                padding="md"
-                className={`flex items-center justify-between transition-all select-none ${
-                  routine.isCompleted
-                    ? 'border-[#10B981]/40 bg-[rgba(16,185,129,0.04)]'
-                    : 'border-[#1E293B] bg-[#0B0E17]'
-                }`}
+          {(!routines || routines.length === 0) ? (
+            <Card variant="flat" padding="md" className="py-8 text-center text-xs text-[#94A3B8] border-dashed border-[#1E293B]">
+              아직 등록된 학습 루틴이 없습니다. 우상단 [루틴 추가] 버튼을 눌러 나만의 매일 공부 습관을 등록해 보세요!
+            </Card>
+          ) : (
+            routines.map((routine) => (
+              <motion.div
+                key={routine.id}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => handleToggle(routine.id, routine.title, routine.isCompleted)}
               >
-                <div className="flex items-center gap-3.5">
-                  <button
-                    type="button"
-                    className={`p-1 rounded-full transition-colors ${
-                      routine.isCompleted
-                        ? 'text-[#10B981]'
-                        : 'text-[#64748B] hover:text-[#94A3B8]'
-                    }`}
-                  >
-                    {routine.isCompleted ? (
-                      <CheckCircle2 className="h-6 w-6 fill-[rgba(16,185,129,0.2)]" />
-                    ) : (
-                      <Circle className="h-6 w-6" />
-                    )}
-                  </button>
-                  <div>
-                    <h3
-                      className={`text-sm font-bold transition-all ${
+                <Card
+                  variant="interactive"
+                  padding="md"
+                  className={`flex items-center justify-between transition-all select-none ${
+                    routine.isCompleted
+                      ? 'border-[#10B981]/40 bg-[rgba(16,185,129,0.04)]'
+                      : 'border-[#1E293B] bg-[#0B0E17]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <button
+                      type="button"
+                      className={`p-1 rounded-full transition-colors ${
                         routine.isCompleted
-                          ? 'line-through text-[#64748B]'
-                          : 'text-[#F8FAFC]'
+                          ? 'text-[#10B981]'
+                          : 'text-[#64748B] hover:text-[#94A3B8]'
                       }`}
                     >
-                      {routine.title}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="sky" size="sm">
-                        {routine.subject}
-                      </Badge>
-                      <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {routine.targetTimeMinutes}분
-                      </span>
-                      <span className="text-[11px] text-[#F59E0B] flex items-center gap-1">
-                        <Flame className="h-3 w-3" />
-                        {routine.streak}일 연속
-                      </span>
+                      {routine.isCompleted ? (
+                        <CheckCircle2 className="h-6 w-6 fill-[rgba(16,185,129,0.2)]" />
+                      ) : (
+                        <Circle className="h-6 w-6" />
+                      )}
+                    </button>
+                    <div>
+                      <h3
+                        className={`text-sm font-bold transition-all ${
+                          routine.isCompleted
+                            ? 'line-through text-[#64748B]'
+                            : 'text-[#F8FAFC]'
+                        }`}
+                      >
+                        {routine.title}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="sky" size="sm">
+                          {routine.subject}
+                        </Badge>
+                        <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {routine.targetTimeMinutes}분
+                        </span>
+                        <span className="text-[11px] text-[#F59E0B] flex items-center gap-1">
+                          <Flame className="h-3 w-3" />
+                          {routine.streak}일 연속
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <Badge variant={routine.isCompleted ? 'success' : 'neutral'} size="sm">
-                    {routine.isCompleted ? '달성' : '대기'}
-                  </Badge>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(routine.id, routine.title);
-                    }}
-                    className="p-1 text-[#64748B] hover:text-[#EF4444] transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+                  <div className="flex items-center gap-2">
+                    <Badge variant={routine.isCompleted ? 'success' : 'neutral'} size="sm">
+                      {routine.isCompleted ? '달성' : '대기'}
+                    </Badge>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(routine.id, routine.title);
+                      }}
+                      className="p-1 text-[#64748B] hover:text-[#EF4444] transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </Card>
+              </motion.div>
+            ))
+          )}
         </div>
       </div>
 

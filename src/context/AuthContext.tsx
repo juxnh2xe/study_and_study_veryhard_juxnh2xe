@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { migrateLocalStorageToSupabase } from '@/lib/migration';
+import { removeItem, STORAGE_KEYS } from '@/lib/storage';
 
 interface AuthContextType {
   user: User | null;
@@ -98,8 +99,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    if (!isConfigured) return;
-    await supabase.auth.signOut();
+    // Clear all LocalStorage session caches on signout to guarantee clean multi-user isolation
+    Object.values(STORAGE_KEYS).forEach((key) => {
+      removeItem(key);
+    });
+
+    if (isConfigured) {
+      await supabase.auth.signOut();
+    }
+
+    setUser(null);
+    setSession(null);
+    window.location.reload();
   };
 
   const signInWithProvider = async (provider: 'google' | 'apple' | 'kakao') => {

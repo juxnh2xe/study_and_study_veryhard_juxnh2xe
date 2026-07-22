@@ -21,12 +21,7 @@ export function useStudyStats() {
         totalSessionsCount: 0,
         streakDays: 0,
         bestStreakDays: 0,
-        subjectDistribution: [
-          { name: '수학', value: 40, color: '#0EA5E9' },
-          { name: '탐구', value: 30, color: '#10B981' },
-          { name: '국어', value: 20, color: '#F59E0B' },
-          { name: '영어', value: 10, color: '#8B5CF6' },
-        ],
+        subjectDistribution: [],
         recentSessions: [],
       };
     }
@@ -91,12 +86,7 @@ export function useStudyStats() {
       totalSessionsCount: sessions.length,
       streakDays: sessions.length > 0 ? 1 : 0,
       bestStreakDays: sessions.length > 0 ? 1 : 0,
-      subjectDistribution: distributionList.length > 0 ? distributionList : [
-        { name: '수학', value: 40, color: '#0EA5E9' },
-        { name: '탐구', value: 30, color: '#10B981' },
-        { name: '국어', value: 20, color: '#F59E0B' },
-        { name: '영어', value: 10, color: '#8B5CF6' },
-      ],
+      subjectDistribution: distributionList,
       recentSessions: sessions.slice(0, 5),
     };
   }, [sessions]);

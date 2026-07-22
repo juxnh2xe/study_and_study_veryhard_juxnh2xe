@@ -31,7 +31,7 @@ import { exportAllDataToJSON, importDataFromJSON, removeItem, STORAGE_KEYS, setI
 import { requestNotificationPermission } from '@/lib/notifications';
 import { UserProfile } from '@/types';
 import { studyRepository } from '@/lib/repository';
-import { User, Award, Plus, Settings, ChevronRight, Download, Upload, RefreshCw, BarChart2, Bell, Sun, HelpCircle, LogIn, LogOut, Edit3, BookOpen } from 'lucide-react';
+import { User, Award, Plus, Settings, ChevronRight, Download, Upload, RefreshCw, BarChart2, Bell, Sun, LogIn, LogOut, Edit3 } from 'lucide-react';
 
 export const ProfileTab: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -339,59 +339,65 @@ export const ProfileTab: React.FC = () => {
       <Card variant="flat" padding="md" className="space-y-4">
         <SectionTitle
           title="과목별 학습 비율 (이번 주)"
-          subtitle="수학 및 탐구 영역 집중 이행 중"
+          subtitle="실제 학습 시간에 따른 비율 분석"
         />
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          <div className="w-44 h-44 relative shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={subjectDistribution}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={75}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {subjectDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="#0B0E17" strokeWidth={2} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#0B0E17',
-                    borderColor: '#1E293B',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    color: '#F8FAFC',
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-[10px] text-[#94A3B8]">최대 집중</span>
-              <span className="text-xs font-bold text-[#38BDF8]">
-                {subjectDistribution[0]?.name || '수학'} {subjectDistribution[0]?.value || 40}%
-              </span>
+        {(!subjectDistribution || subjectDistribution.length === 0) ? (
+          <div className="py-8 text-center text-xs text-[#94A3B8] border border-dashed border-[#1E293B] rounded-lg">
+            학습 기록이 축적되면 과목별 몰입 비율이 자동으로 계산되어 차트로 표시됩니다.
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="w-44 h-44 relative shrink-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={subjectDistribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={75}
+                    paddingAngle={4}
+                    dataKey="value"
+                  >
+                    {subjectDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#0B0E17" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#0B0E17',
+                      borderColor: '#1E293B',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      color: '#F8FAFC',
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-[10px] text-[#94A3B8]">최대 집중</span>
+                <span className="text-xs font-bold text-[#38BDF8]">
+                  {subjectDistribution[0]?.name || '없음'} {subjectDistribution[0]?.value || 0}%
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-2.5 w-full">
+              {subjectDistribution.map((item) => (
+                <div key={item.name} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="font-semibold text-[#F8FAFC]">{item.name}</span>
+                  </div>
+                  <span className="text-[#94A3B8] font-mono">{item.value}%</span>
+                </div>
+              ))}
             </div>
           </div>
-
-          <div className="flex-1 space-y-2.5 w-full">
-            {subjectDistribution.map((item) => (
-              <div key={item.name} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="font-semibold text-[#F8FAFC]">{item.name}</span>
-                </div>
-                <span className="text-[#94A3B8] font-mono">{item.value}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </Card>
 
       {/* Textbook Progress */}
@@ -544,6 +550,45 @@ export const ProfileTab: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Weakness / Wrong Answer Modal */}
+      <Modal
+        isOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
+        title={noteType === 'retrieval' ? '새 인출 약점 노트 추가' : '새 오답 문제 추가'}
+        subtitle="복습이 필요한 항목을 기록하세요"
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setIsNoteModalOpen(false)}>
+              취소
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleAddNote}>
+              저장
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Input
+            label="과목명"
+            placeholder="예) 수학II, 물리학I"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+          />
+          <Input
+            label={noteType === 'retrieval' ? '약점 단원 / 주제' : '문제 제목 / 출처'}
+            placeholder={noteType === 'retrieval' ? '예) 사잇값 정리 증명 과정' : '예) 2025 6월 모평 22번'}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <Input
+            label={noteType === 'retrieval' ? '약점 분석 및 보완 포인트' : '오답 원인 분석'}
+            placeholder={noteType === 'retrieval' ? '예) 개념 이해 부족, 재복습 필요' : '예) 조건 해석 오류 및 계산 실수'}
+            value={detail}
+            onChange={(e) => setDetail(e.target.value)}
+          />
+        </div>
+      </Modal>
 
       {/* Settings Menu Button */}
       <Card variant="flat" padding="none" className="divide-y divide-[#1E293B] overflow-hidden">

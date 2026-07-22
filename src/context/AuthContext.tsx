@@ -5,13 +5,22 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { migrateLocalStorageToSupabase } from '@/lib/migration';
 import { removeItem, STORAGE_KEYS } from '@/lib/storage';
+import { UserRole } from '@/types';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
+  userRole: UserRole;
+  setUserRole: (role: UserRole) => void;
   isLoading: boolean;
   isConfigured: boolean;
-  signUpWithEmail: (email: string, password: string, name: string) => Promise<{ error: Error | null }>;
+  signUpWithEmail: (
+    email: string,
+    password: string,
+    name: string,
+    role?: UserRole,
+    grade?: string
+  ) => Promise<{ error: Error | null }>;
   signInWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   signInWithProvider: (provider: 'google' | 'apple' | 'kakao') => Promise<void>;
@@ -22,6 +31,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>('student');
   const [isLoading, setIsLoading] = useState(true);
 
   const isConfigured = isSupabaseConfigured();
@@ -36,6 +46,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        const savedRole = (session.user.user_metadata?.role as UserRole) || 'student';
+        setUserRole(savedRole);
         migrateLocalStorageToSupabase(session.user.id);
       }
       setIsLoading(false);
@@ -47,6 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        const savedRole = (session.user.user_metadata?.role as UserRole) || 'student';
+        setUserRole(savedRole);
         migrateLocalStorageToSupabase(session.user.id);
       }
       setIsLoading(false);
@@ -55,7 +69,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, [isConfigured]);
 
-  const signUpWithEmail = async (email: string, password: string, name: string) => {
+  const signUpWithEmail = async (
+    email: string,
+    password: string,
+    name: string,
+    role: UserRole = 'student',
+    grade: string = '3'
+  ) => {
     if (!isConfigured) {
       return { error: new Error('Supabase project configuration is missing.') };
     }
@@ -64,15 +84,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
       options: {
-        data: { name },
+        data: { name, role, grade },
       },
     });
 
     if (data.user) {
-      // Upsert profile
+      setUserRole(role);
+      // Upsert profile with role
       await supabase.from('profiles').upsert({
         id: data.user.id,
         name,
+        role,
+        grade,
         created_at: new Date().toISOString(),
       });
       await migrateLocalStorageToSupabase(data.user.id);
@@ -92,6 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     if (data.user) {
+      const savedRole = (data.user.user_metadata?.role as UserRole) || 'student';
+      setUserRole(savedRole);
       await migrateLocalStorageToSupabase(data.user.id);
     }
 
@@ -110,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setUser(null);
     setSession(null);
+    setUserRole('student');
     window.location.reload();
   };
 
@@ -125,6 +151,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         session,
+        userRole,
+        setUserRole,
         isLoading,
         isConfigured,
         signUpWithEmail,

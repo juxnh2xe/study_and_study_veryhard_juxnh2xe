@@ -13,6 +13,7 @@ import { StudyHeatmap } from '../common/study-heatmap';
 import { GoalManager } from '../common/goal-manager';
 import { ExamManager } from '../common/exam-manager';
 import { FocusGarden } from '../common/focus-garden';
+import { StudyStreakCalendar } from '../common/study-streak-calendar';
 import { Flame, Play, Calendar, Clock, Award, BookOpen, Plus, CheckCircle2, Circle, Search } from 'lucide-react';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useStudyStats } from '@/hooks/useStudyStats';
@@ -196,6 +197,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           className="col-span-2 sm:col-span-1"
         />
       </div>
+
+      {/* 30-Day Study Streak Calendar */}
+      <StudyStreakCalendar />
 
       {/* 365-day Study Heatmap */}
       <StudyHeatmap sessions={recentSessions} />

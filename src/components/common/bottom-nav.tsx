@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, CheckSquare, Flame, User } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, Flame, User, Users } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
-export type NavTab = 'dashboard' | 'routine' | 'focus' | 'profile';
+export type NavTab = 'dashboard' | 'routine' | 'focus' | 'profile' | 'parent';
 
 export interface BottomNavProps {
   activeTab: NavTab;
@@ -22,6 +22,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     { id: 'dashboard', label: '홈', icon: LayoutDashboard },
     { id: 'routine', label: '루틴', icon: CheckSquare },
     { id: 'focus', label: '몰입', icon: Flame },
+    { id: 'parent', label: '케어(부모)', icon: Users },
     { id: 'profile', label: '마이', icon: User },
   ];
 
@@ -48,7 +49,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               aria-label={`${item.label} 탭으로 이동`}
               onClick={() => onChangeTab(item.id)}
               className={cn(
-                'relative flex flex-col items-center justify-center min-h-[44px] py-1.5 px-3 sm:px-4 rounded-full text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9]',
+                'relative flex flex-col items-center justify-center min-h-[44px] py-1.5 px-2.5 sm:px-3 rounded-full text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9]',
                 isActive ? 'text-[#0EA5E9]' : 'text-[#64748B] hover:text-[#94A3B8]'
               )}
             >
@@ -60,7 +61,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 />
               )}
               <Icon className="h-5 w-5 mb-0.5 z-10 shrink-0" aria-hidden="true" />
-              <span className="z-10 text-[11px] whitespace-nowrap">{item.label}</span>
+              <span className="z-10 text-[10px] sm:text-[11px] whitespace-nowrap">{item.label}</span>
             </button>
           );
         })}

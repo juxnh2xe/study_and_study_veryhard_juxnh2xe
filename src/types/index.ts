@@ -4,6 +4,18 @@ export type PriorityLevel = 'high' | 'medium' | 'low';
 export type TaskStatus = 'todo' | 'in_progress' | 'completed';
 export type SubjectCategory = 'math' | 'korean' | 'english' | 'science' | 'social' | 'foreign' | 'other';
 export type DynamicSkyPhase = 'dawn' | 'morning' | 'day' | 'sunset' | 'night';
+export type UserRole = 'student' | 'parent';
+
+export interface ParentStudentLink {
+  id: string;
+  parentId: string;
+  studentId: string;
+  studentName: string;
+  studentGrade: string;
+  targetUniversity: string;
+  connectionCode: string;
+  createdAt: string;
+}
 
 export interface Subject {
   id: string;
@@ -37,6 +49,7 @@ export interface Routine {
   isCompleted: boolean;
   streak: number;
   lastCompletedDate?: string; // YYYY-MM-DD
+  linkedTextbookId?: string;
 }
 
 export type GoalScope = 'today' | 'week' | 'month' | 'year';
@@ -109,6 +122,7 @@ export interface FocusSession {
   endTime: string;   // ISO String
   durationMinutes: number;
   rating: 1 | 2 | 3 | 4 | 5; // Focus quality self-assessment
+  sessionRating?: 'great' | 'good' | 'hard';
   memo?: string;
 }
 
@@ -120,8 +134,11 @@ export interface DailyGoal {
 
 export interface UserProfile {
   name: string;
+  role?: UserRole;
   grade: '1' | '2' | '3' | 'other'; // High school 1st, 2nd, 3rd year
   targetUniversity: string;
+  connectionCode?: string; // Student protection link code e.g. "DAYBREAK-A82K91"
+  allowParentMonitoring?: boolean;
   dDay: {
     title: string; // e.g. "2027 수능"
     targetDate: string; // YYYY-MM-DD
@@ -161,6 +178,7 @@ export interface WrongAnswerNote {
   questionTitle: string;
   reason: string;
   reviewCount: number;
+  reviewDate?: string; // YYYY-MM-DD spaced repetition date
 }
 
 export interface SubjectDistributionItem {

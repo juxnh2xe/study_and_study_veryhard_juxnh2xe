@@ -1,90 +1,109 @@
-// Early Morning Sky (새벽하늘) Design System Tokens
+export type ThemeId =
+  | 'midnight_sky'
+  | 'cloud_blue'
+  | 'dawn_gradient'
+  | 'forest_focus'
+  | 'warm_paper'
+  | 'pure_oled';
 
-export const THEME_TOKENS = {
-  colors: {
-    bg: {
-      deepBlack: '#070A0F',     // Main background
-      surfaceDark: '#0B0E17',   // Lighter surface container
-      cardBg: '#111625',        // Card background
-      cardHover: '#171E30',     // Card hover state
-      modalBg: '#131825',       // Modal elevated surface
-      glassBg: 'rgba(11, 14, 23, 0.85)',
-    },
-    text: {
-      primary: '#F8FAFC',       // White Cloud
-      secondary: '#94A3B8',     // Mist Gray
-      caption: '#64748B',       // Dawn Dusk subtle
-      disabled: '#475569',
-    },
-    accent: {
-      skyBluePrimary: '#0EA5E9', // Sky Blue 500
-      skyBlueHover: '#0284C7',   // Sky Blue 600
-      skyBlueGlow: '#38BDF8',    // Sky Blue 400
-      skyBlueSubtle: 'rgba(14, 165, 233, 0.12)',
-      gradientSky: 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)',
-      gradientCardSky: 'linear-gradient(180deg, rgba(14, 165, 233, 0.08) 0%, rgba(11, 14, 23, 0) 100%)',
-    },
-    status: {
-      success: '#10B981',        // Emerald Green
-      successBg: 'rgba(16, 185, 129, 0.12)',
-      warning: '#F59E0B',        // Orange / Amber
-      warningBg: 'rgba(245, 158, 11, 0.12)',
-      danger: '#EF4444',         // Red
-      dangerBg: 'rgba(239, 68, 68, 0.12)',
-    },
-    border: {
-      subtle: '#1E293B',         // Subtle Gray border
-      hover: '#334155',          // Hover border
-      accent: 'rgba(14, 165, 233, 0.4)',
-    },
+export interface ThemeConfig {
+  id: ThemeId;
+  name: string;
+  description: string;
+  icon: string;
+  background: string;
+  foreground: string;
+  mutedText: string;
+  accent: string;
+  accentGlow: string;
+  cardBg: string;
+  cardBorder: string;
+  chartColors: string[];
+}
+
+export const THEME_PRESETS: Record<ThemeId, ThemeConfig> = {
+  midnight_sky: {
+    id: 'midnight_sky',
+    name: 'Midnight Sky',
+    description: '깊은 밤하늘 (기본 시그니처 테마)',
+    icon: '🌌',
+    background: 'bg-[#070A0F]',
+    foreground: '#F8FAFC',
+    mutedText: '#94A3B8',
+    accent: '#0EA5E9',
+    accentGlow: 'rgba(14, 165, 233, 0.25)',
+    cardBg: '#0B0E17',
+    cardBorder: '#1E293B',
+    chartColors: ['#0EA5E9', '#10B981', '#F59E0B', '#8B5CF6'],
   },
-  radius: {
-    button: '0.75rem',    // 12px
-    card: '1rem',         // 16px
-    modal: '1.25rem',     // 20px
-    input: '0.75rem',     // 12px
-    progress: '9999px',   // Pill
-    chip: '9999px',       // Pill
-    bottomNav: '1.5rem',  // 24px
+  cloud_blue: {
+    id: 'cloud_blue',
+    name: 'Cloud Blue',
+    description: '맑은 하늘과 구름 (장시간 학습용 청량 테마)',
+    icon: '☁️',
+    background: 'bg-[#0F172A]',
+    foreground: '#F1F5F9',
+    mutedText: '#94A3B8',
+    accent: '#38BDF8',
+    accentGlow: 'rgba(56, 189, 248, 0.25)',
+    cardBg: '#1E293B',
+    cardBorder: '#334155',
+    chartColors: ['#38BDF8', '#2DD4BF', '#FBBF24', '#C084FC'],
   },
-  shadows: {
-    softCard: '0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(30, 41, 59, 0.6)',
-    softElevated: '0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(30, 41, 59, 0.8)',
-    skyGlow: '0 0 20px -2px rgba(14, 165, 233, 0.25)',
+  dawn_gradient: {
+    id: 'dawn_gradient',
+    name: 'Dawn Gradient',
+    description: '새벽에서 아침으로 넘어가는 감성 하늘',
+    icon: '🌅',
+    background: 'bg-gradient-to-b from-[#090D16] via-[#111827] to-[#1E293B]',
+    foreground: '#F8FAFC',
+    mutedText: '#CBD5E1',
+    accent: '#60A5FA',
+    accentGlow: 'rgba(96, 165, 250, 0.25)',
+    cardBg: 'rgba(17, 24, 39, 0.85)',
+    cardBorder: '#374151',
+    chartColors: ['#60A5FA', '#34D399', '#F472B6', '#A78BFA'],
   },
-  typography: {
-    title: 'text-2xl font-bold tracking-tight text-[#F8FAFC]',
-    subtitle: 'text-lg font-semibold tracking-tight text-[#F8FAFC]',
-    body: 'text-sm font-normal text-[#94A3B8] leading-relaxed',
-    caption: 'text-xs font-medium text-[#64748B]',
-    button: 'text-sm font-semibold tracking-wide',
-    statistic: 'text-3xl font-extrabold tracking-tight text-[#F8FAFC]',
+  forest_focus: {
+    id: 'forest_focus',
+    name: 'Forest Focus',
+    description: '집중을 위한 차분한 딥 그린 정원',
+    icon: '🌲',
+    background: 'bg-[#05140E]',
+    foreground: '#ECFDF5',
+    mutedText: '#6EE7B7',
+    accent: '#10B981',
+    accentGlow: 'rgba(16, 185, 129, 0.25)',
+    cardBg: '#0A2118',
+    cardBorder: '#133E2E',
+    chartColors: ['#10B981', '#34D399', '#0EA5E9', '#F59E0B'],
   },
-  spacing: {
-    xs: '0.5rem',   // 8px
-    sm: '0.75rem',  // 12px
-    md: '1rem',     // 16px
-    lg: '1.5rem',   // 24px
-    xl: '2rem',     // 32px
+  warm_paper: {
+    id: 'warm_paper',
+    name: 'Warm Paper',
+    description: '따뜻한 종이 노트와 원목 분위기',
+    icon: '📜',
+    background: 'bg-[#1C1917]',
+    foreground: '#F5F5F4',
+    mutedText: '#A8A29E',
+    accent: '#F97316',
+    accentGlow: 'rgba(249, 115, 22, 0.25)',
+    cardBg: '#292524',
+    cardBorder: '#44403C',
+    chartColors: ['#F97316', '#F59E0B', '#84CC16', '#0EA5E9'],
   },
-  motion: {
-    durationFast: 0.15,
-    durationNormal: 0.25,
-    easeDefault: [0.16, 1, 0.3, 1], // Linear / Apple smooth ease
-    fadeIn: {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-    },
-    slideUp: {
-      initial: { opacity: 0, y: 12 },
-      animate: { opacity: 1, y: 0 },
-      exit: { opacity: 0, y: 12 },
-    },
-    scaleUp: {
-      initial: { opacity: 0, scale: 0.96 },
-      animate: { opacity: 1, scale: 1 },
-      exit: { opacity: 0, scale: 0.96 },
-    },
+  pure_oled: {
+    id: 'pure_oled',
+    name: 'Pure OLED Black',
+    description: '최소 전력 및 피로 감소 완전 검정',
+    icon: '🖤',
+    background: 'bg-[#000000]',
+    foreground: '#FFFFFF',
+    mutedText: '#888888',
+    accent: '#00A3FF',
+    accentGlow: 'rgba(0, 163, 255, 0.3)',
+    cardBg: '#0A0A0A',
+    cardBorder: '#222222',
+    chartColors: ['#00A3FF', '#00E5FF', '#00FF66', '#FFD600'],
   },
-} as const;
+};

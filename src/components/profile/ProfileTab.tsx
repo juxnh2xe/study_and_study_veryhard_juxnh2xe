@@ -20,6 +20,7 @@ import { LoginModal } from '../auth/login-modal';
 import { SignupModal } from '../auth/signup-modal';
 import { ResetPasswordModal } from '../auth/reset-password-modal';
 import { ProfileEditModal } from '../auth/profile-edit-modal';
+import { ThemeSelectorModal } from '../common/theme-selector-modal';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { MOCK_USER } from '@/constants/mock-data';
 import { useStudyStats } from '@/hooks/useStudyStats';
@@ -31,7 +32,7 @@ import { exportAllDataToJSON, importDataFromJSON, removeItem, STORAGE_KEYS, setI
 import { requestNotificationPermission } from '@/lib/notifications';
 import { UserProfile } from '@/types';
 import { studyRepository } from '@/lib/repository';
-import { User, Award, Plus, Settings, ChevronRight, Download, Upload, RefreshCw, BarChart2, Bell, Sun, LogIn, LogOut, Edit3 } from 'lucide-react';
+import { User, Award, Plus, Settings, ChevronRight, Download, Upload, RefreshCw, BarChart2, Bell, Sun, LogIn, LogOut, Edit3, ShieldCheck } from 'lucide-react';
 
 export const ProfileTab: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -66,6 +67,7 @@ export const ProfileTab: React.FC = () => {
 
   // Settings & Report Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
@@ -317,6 +319,22 @@ export const ProfileTab: React.FC = () => {
             설정
           </Button>
         </div>
+      </Card>
+
+      {/* Student Connection Code Card for Parent Monitoring */}
+      <Card variant="flat" padding="md" className="space-y-2 border-[#0EA5E9]/40 bg-[#0B0E17]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#F8FAFC]">
+            <ShieldCheck className="h-4 w-4 text-[#0EA5E9]" />
+            <span>보호자(부모님) 연동 코드</span>
+          </div>
+          <Badge variant="sky" size="sm">
+            DAYBREAK-A82K91
+          </Badge>
+        </div>
+        <p className="text-xs text-[#94A3B8]">
+          부모님 Daybreak 모니터링 탭에서 위 코드를 입력하시면 실시간 몰입 현황과 주간 학습 리포트가 공유됩니다.
+        </p>
       </Card>
 
       {/* Time Stats Summary Grid */}
@@ -711,6 +729,26 @@ export const ProfileTab: React.FC = () => {
             )}
           </div>
 
+          {/* Theme Customization Button */}
+          <div className="p-3.5 rounded-lg bg-[#131825] border border-[#0EA5E9]/40 flex items-center justify-between">
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold text-[#F8FAFC]">화면 테마 &amp; 앰비언스 커스텀 🎨</span>
+              <p className="text-[11px] text-[#94A3B8]">
+                Midnight, Cloud Blue, Forest 등 6가지 테마 및 밝기 조절
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                setIsSettingsOpen(false);
+                setIsThemeSelectorOpen(true);
+              }}
+            >
+              테마 변경
+            </Button>
+          </div>
+
           {/* Toggles */}
           <div className="p-3.5 rounded-lg bg-[#131825] border border-[#1E293B] space-y-3">
             <div className="flex items-center justify-between">
@@ -807,6 +845,11 @@ export const ProfileTab: React.FC = () => {
         description="이 작업은 되돌릴 수 없으며 로컬에 저장된 모든 학습 세션과 루틴이 즉시 삭제됩니다."
         variant="danger"
         confirmText="초기화 실행"
+      />
+
+      <ThemeSelectorModal
+        isOpen={isThemeSelectorOpen}
+        onClose={() => setIsThemeSelectorOpen(false)}
       />
     </motion.div>
   );

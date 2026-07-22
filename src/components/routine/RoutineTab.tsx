@@ -11,13 +11,17 @@ import { Modal } from '../ui/modal';
 import { Chip } from '../ui/chip';
 import { SectionTitle } from '../common/section-title';
 import { StatCard } from '../common/stat-card';
-import { CheckCircle2, Circle, Plus, Flame, Sparkles, Clock, Target, Trash2 } from 'lucide-react';
+import { CheckCircle2, Circle, Plus, Flame, Sparkles, Clock, Target, Trash2, Play } from 'lucide-react';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useToast } from '../ui/toast';
 import { DEFAULT_SUBJECTS } from '@/constants/subjects';
-import { SubjectCategory } from '@/types';
+import { SubjectCategory, Routine } from '@/types';
 
-export const RoutineTab: React.FC = () => {
+export interface RoutineTabProps {
+  onStartFocusRoutine?: (routine: Routine) => void;
+}
+
+export const RoutineTab: React.FC<RoutineTabProps> = ({ onStartFocusRoutine }) => {
   const {
     routines,
     toggleRoutine,
@@ -239,6 +243,26 @@ export const RoutineTab: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      leftIcon={<Play className="h-3.5 w-3.5 fill-current" />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onStartFocusRoutine) {
+                          onStartFocusRoutine(routine);
+                        } else {
+                          showToast({
+                            type: 'info',
+                            title: '몰입 타이머 이동 ⏱',
+                            description: `"${routine.title}" 과목(${routine.subject})으로 공부를 시작합니다.`,
+                          });
+                        }
+                      }}
+                      className="whitespace-nowrap px-2.5 h-8 text-[11px]"
+                    >
+                      ▶ 바로 시작
+                    </Button>
                     <Badge variant={routine.isCompleted ? 'success' : 'neutral'} size="sm">
                       {routine.isCompleted ? '달성' : '대기'}
                     </Badge>

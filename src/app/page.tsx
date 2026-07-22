@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ToastProvider } from '@/components/ui/toast';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { PageContainer } from '@/components/common/page-container';
 import { BottomNav, NavTab } from '@/components/common/bottom-nav';
 import { DashboardTab } from '@/components/dashboard/DashboardTab';
 import { RoutineTab } from '@/components/routine/RoutineTab';
 import { FocusTab } from '@/components/focus/FocusTab';
 import { ProfileTab } from '@/components/profile/ProfileTab';
+import { ParentDashboardTab } from '@/components/parent/ParentDashboardTab';
 import { GlobalSearchModal } from '@/components/common/global-search-modal';
 import { SplashScreen } from '@/components/common/splash-screen';
 import { OnboardingModal } from '@/components/common/onboarding-modal';
@@ -17,9 +19,10 @@ import { useDynamicSkyTheme } from '@/hooks/useDynamicSkyTheme';
 
 function AppContent() {
   const { user } = useAuth();
+  const { currentTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { bgStyle, glowGradient } = useDynamicSkyTheme(true);
+  const { glowGradient } = useDynamicSkyTheme(true);
 
   // Strictly require user login! Guest mode disabled.
   if (!user) {
@@ -27,8 +30,11 @@ function AppContent() {
   }
 
   return (
-    <main className={`min-h-screen ${bgStyle} text-[#F8FAFC] relative transition-colors duration-1000`}>
-      {/* Dynamic Sky Subtle Ambient Glow */}
+    <main
+      className={`min-h-screen ${currentTheme.background} relative transition-all duration-700`}
+      style={{ color: currentTheme.foreground }}
+    >
+      {/* Dynamic Ambient Glow */}
       <div
         className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000"
         style={{ background: glowGradient }}
@@ -46,6 +52,8 @@ function AppContent() {
         {activeTab === 'routine' && <RoutineTab />}
 
         {activeTab === 'focus' && <FocusTab />}
+
+        {activeTab === 'parent' && <ParentDashboardTab />}
 
         {activeTab === 'profile' && <ProfileTab />}
       </PageContainer>
@@ -68,15 +76,17 @@ function AppContent() {
 export default function HomePage() {
   return (
     <AuthProvider>
-      <ToastProvider>
-        {/* Brand Splash Screen on Initial Load */}
-        <SplashScreen />
+      <ThemeProvider>
+        <ToastProvider>
+          {/* Brand Splash Screen on Initial Load */}
+          <SplashScreen />
 
-        {/* First-time User Onboarding Carousel */}
-        <OnboardingModal />
+          {/* First-time User Onboarding Carousel */}
+          <OnboardingModal />
 
-        <AppContent />
-      </ToastProvider>
+          <AppContent />
+        </ToastProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

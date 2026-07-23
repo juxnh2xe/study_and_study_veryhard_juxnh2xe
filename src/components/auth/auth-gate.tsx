@@ -5,18 +5,21 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Flame, Mail, Lock, User, Key, LogIn, UserPlus } from 'lucide-react';
+import { Flame, Mail, Lock, User, Key, LogIn, UserPlus, GraduationCap, HeartHandshake } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '../ui/toast';
+import { UserRole } from '@/types';
 
 export const AuthGate: React.FC = () => {
   const { signInWithEmail, signUpWithEmail } = useAuth();
   const { showToast } = useToast();
 
   const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('student');
 
   // Form Fields
   const [name, setName] = useState('');
+  const [grade, setGrade] = useState<'1' | '2' | '3' | 'other'>('3');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -83,11 +86,17 @@ export const AuthGate: React.FC = () => {
         showToast({
           type: 'success',
           title: '로그인 성공! 🌅',
-          description: '환영합니다. 새벽하늘 몰입 관리를 시작합니다.',
+          description: '환영합니다. Daybreak Study 서비스를 시작합니다.',
         });
       }
     } else {
-      const { error } = await signUpWithEmail(email.trim(), password, name.trim());
+      const { error } = await signUpWithEmail(
+        email.trim(),
+        password,
+        name.trim(),
+        selectedRole,
+        grade
+      );
       setIsSubmitting(false);
       if (error) {
         showToast({
@@ -99,7 +108,7 @@ export const AuthGate: React.FC = () => {
         showToast({
           type: 'success',
           title: '회원가입 완료! 🎉',
-          description: '보안 인증 키 승인으로 계정이 생성되었습니다.',
+          description: `${selectedRole === 'student' ? '학생' : '보호자'} 계정으로 가입되었습니다.`,
         });
       }
     }
@@ -122,7 +131,7 @@ export const AuthGate: React.FC = () => {
             DAYBREAK STUDY
           </h1>
           <p className="text-xs text-[#94A3B8]">
-            고등학생을 위한 프라이빗 몰입 타이머 &amp; 학업 플래너
+            학생을 위한 몰입 플래너 &amp; 보호자 맞춤형 코칭 서비스
           </p>
         </div>
 
@@ -152,14 +161,70 @@ export const AuthGate: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-3">
             {mode === 'signup' && (
-              <Input
-                label="이름 / 닉네임"
-                placeholder="이름 또는 닉네임 입력"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                leftIcon={<User className="h-4 w-4" />}
-                autoFocus
-              />
+              <>
+                {/* Account Role Selector */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-[#94A3B8]">
+                    계정 유형 선택
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('student')}
+                      className={`p-2.5 rounded-xl border flex items-center justify-center gap-1.5 text-xs font-bold transition-all ${
+                        selectedRole === 'student'
+                          ? 'bg-[rgba(14,165,233,0.15)] text-[#38BDF8] border-[#0EA5E9]'
+                          : 'bg-[#131825] text-[#94A3B8] border-[#1E293B]'
+                      }`}
+                    >
+                      <GraduationCap className="h-4 w-4" />
+                      <span>🎓 학생 계정</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('parent')}
+                      className={`p-2.5 rounded-xl border flex items-center justify-center gap-1.5 text-xs font-bold transition-all ${
+                        selectedRole === 'parent'
+                          ? 'bg-[rgba(14,165,233,0.15)] text-[#38BDF8] border-[#0EA5E9]'
+                          : 'bg-[#131825] text-[#94A3B8] border-[#1E293B]'
+                      }`}
+                    >
+                      <HeartHandshake className="h-4 w-4" />
+                      <span>👨‍👩‍👦 보호자 계정</span>
+                    </button>
+                  </div>
+                </div>
+
+                <Input
+                  label={selectedRole === 'student' ? '학생 이름 / 닉네임' : '보호자 성함'}
+                  placeholder={selectedRole === 'student' ? '예) 김지훈' : '예) 보호자 성함'}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  leftIcon={<User className="h-4 w-4" />}
+                />
+
+                {selectedRole === 'student' && (
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-[#94A3B8]">학년</label>
+                    <div className="flex gap-2">
+                      {(['1', '2', '3'] as const).map((g) => (
+                        <button
+                          key={g}
+                          type="button"
+                          onClick={() => setGrade(g)}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                            grade === g
+                              ? 'bg-[#0EA5E9] text-white border-[#0EA5E9]'
+                              : 'bg-[#131825] text-[#94A3B8] border-[#1E293B]'
+                          }`}
+                        >
+                          {g}학년
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             <Input
@@ -212,7 +277,11 @@ export const AuthGate: React.FC = () => {
               leftIcon={mode === 'login' ? <LogIn className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
               className="mt-2"
             >
-              {mode === 'login' ? 'Daybreak 로그인' : '보안 가입 완료'}
+              {mode === 'login'
+                ? 'Daybreak 로그인'
+                : selectedRole === 'student'
+                ? '학생 회원가입 완료'
+                : '보호자 회원가입 완료'}
             </Button>
           </form>
         </Card>

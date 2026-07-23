@@ -29,7 +29,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        'w-full mx-auto px-4 sm:px-6 pt-4 pb-28 min-h-screen text-[#F8FAFC]',
+        'w-full mx-auto px-3.5 sm:px-6 pt-4 pb-32 sm:pb-36 min-h-[100dvh] text-[#F8FAFC] overflow-x-hidden',
         maxWidths[maxWidth],
         className
       )}

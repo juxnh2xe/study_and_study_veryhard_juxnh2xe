@@ -19,6 +19,16 @@ export const OnboardingModal: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow || '';
+      };
+    }
+  }, [isOpen]);
+
   const slides = [
     {
       icon: <Flame className="h-10 w-10 text-[#0EA5E9]" />,
@@ -59,12 +69,12 @@ export const OnboardingModal: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-[#070A0F]/85 backdrop-blur-md"
+          className="fixed inset-0 bg-[#070A0F]/85 backdrop-blur-md z-0"
         />
 
         <motion.div
@@ -72,9 +82,9 @@ export const OnboardingModal: React.FC = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 15 }}
           transition={{ duration: 0.2 }}
-          className="relative w-full max-w-md bg-[#0B0E17] text-[#F8FAFC] border border-[#1E293B] rounded-[1.25rem] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-10 space-y-6"
+          className="relative z-10 w-full max-w-md max-h-[85vh] sm:max-h-[90vh] flex flex-col bg-[#0B0E17] text-[#F8FAFC] border border-[#1E293B] rounded-2xl p-5 sm:p-6 shadow-[0_15px_35px_rgba(0,0,0,0.8)] space-y-4 overflow-y-auto"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between shrink-0">
             <span className="text-xs font-bold text-[#0EA5E9]">
               가이드 ({step + 1} / {slides.length})
             </span>
@@ -87,20 +97,20 @@ export const OnboardingModal: React.FC = () => {
             </button>
           </div>
 
-          <div className="py-4 flex flex-col items-center text-center space-y-3">
+          <div className="py-2 flex flex-col items-center text-center space-y-3 flex-1 justify-center">
             <div className="p-4 rounded-2xl bg-[#131825] border border-[#1E293B]">
               {slides[step].icon}
             </div>
-            <h2 className="text-lg font-bold text-[#F8FAFC]">
+            <h2 className="text-base sm:text-lg font-bold text-[#F8FAFC] break-keep">
               {slides[step].title}
             </h2>
-            <p className="text-xs text-[#94A3B8] leading-relaxed max-w-xs">
+            <p className="text-xs text-[#94A3B8] leading-relaxed max-w-xs break-keep">
               {slides[step].description}
             </p>
           </div>
 
           {/* Dots Indicator */}
-          <div className="flex items-center justify-center gap-1.5">
+          <div className="flex items-center justify-center gap-1.5 shrink-0">
             {slides.map((_, i) => (
               <div
                 key={`dot-${i}`}
@@ -117,6 +127,7 @@ export const OnboardingModal: React.FC = () => {
             fullWidth
             rightIcon={<ChevronRight className="h-4 w-4" />}
             onClick={handleNext}
+            className="shrink-0"
           >
             {step === slides.length - 1 ? '시작하기' : '다음'}
           </Button>

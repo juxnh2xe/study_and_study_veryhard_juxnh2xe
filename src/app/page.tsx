@@ -5,7 +5,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ToastProvider } from '@/components/ui/toast';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { PageContainer } from '@/components/common/page-container';
-import { BottomNav, NavTab } from '@/components/common/bottom-nav';
+import { BottomNav, ParentBottomNav, StudentNavTab, ParentNavTab } from '@/components/common/bottom-nav';
 import { DashboardTab } from '@/components/dashboard/DashboardTab';
 import { RoutineTab } from '@/components/routine/RoutineTab';
 import { FocusTab } from '@/components/focus/FocusTab';
@@ -18,17 +18,53 @@ import { AuthGate } from '@/components/auth/auth-gate';
 import { useDynamicSkyTheme } from '@/hooks/useDynamicSkyTheme';
 
 function AppContent() {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const { currentTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
+
+  // Student navigation tab state
+  const [studentTab, setStudentTab] = useState<StudentNavTab>('dashboard');
+
+  // Parent navigation tab state
+  const [parentTab, setParentTab] = useState<ParentNavTab>('overview');
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { glowGradient } = useDynamicSkyTheme(true);
 
-  // Strictly require user login! Guest mode disabled.
+  // Require user login
   if (!user) {
     return <AuthGate />;
   }
 
+  // 1. Parent Role View
+  if (userRole === 'parent') {
+    return (
+      <main
+        className={`min-h-screen ${currentTheme.background} relative transition-all duration-700`}
+        style={{ color: currentTheme.foreground }}
+      >
+        {/* Dynamic Ambient Glow */}
+        <div
+          className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000"
+          style={{ background: glowGradient }}
+        />
+
+        <PageContainer maxWidth="md" className="relative z-10 pb-24">
+          <ParentDashboardTab
+            activeSubTab={parentTab}
+            onNavigateSubTab={(tab) => setParentTab(tab)}
+          />
+        </PageContainer>
+
+        {/* Parent Dedicated Navigation Bar */}
+        <ParentBottomNav
+          activeTab={parentTab}
+          onChangeTab={(tab) => setParentTab(tab)}
+        />
+      </main>
+    );
+  }
+
+  // 2. Student Role View (Default)
   return (
     <main
       className={`min-h-screen ${currentTheme.background} relative transition-all duration-700`}
@@ -40,22 +76,20 @@ function AppContent() {
         style={{ background: glowGradient }}
       />
 
-      <PageContainer maxWidth="md" className="relative z-10">
-        {activeTab === 'dashboard' && (
+      <PageContainer maxWidth="md" className="relative z-10 pb-24">
+        {studentTab === 'dashboard' && (
           <DashboardTab
-            onStartFocus={() => setActiveTab('focus')}
-            onNavigateTab={(tab) => setActiveTab(tab)}
+            onStartFocus={() => setStudentTab('focus')}
+            onNavigateTab={(tab) => setStudentTab(tab as StudentNavTab)}
             onOpenSearch={() => setIsSearchOpen(true)}
           />
         )}
 
-        {activeTab === 'routine' && <RoutineTab />}
+        {studentTab === 'routine' && <RoutineTab />}
 
-        {activeTab === 'focus' && <FocusTab />}
+        {studentTab === 'focus' && <FocusTab />}
 
-        {activeTab === 'parent' && <ParentDashboardTab />}
-
-        {activeTab === 'profile' && <ProfileTab />}
+        {studentTab === 'profile' && <ProfileTab />}
       </PageContainer>
 
       {/* Global Search Modal Trigger */}
@@ -64,10 +98,10 @@ function AppContent() {
         onClose={() => setIsSearchOpen(false)}
       />
 
-      {/* Fixed iOS Style Bottom Navigation Bar */}
+      {/* Student Dedicated Bottom Navigation Bar */}
       <BottomNav
-        activeTab={activeTab}
-        onChangeTab={(tab) => setActiveTab(tab)}
+        activeTab={studentTab}
+        onChangeTab={(tab) => setStudentTab(tab)}
       />
     </main>
   );

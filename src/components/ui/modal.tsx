@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -26,6 +27,12 @@ export const Modal: React.FC<ModalProps> = ({
   maxWidth = 'md',
   className,
 }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -52,7 +59,9 @@ export const Modal: React.FC<ModalProps> = ({
     xl: 'max-w-xl',
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
@@ -73,7 +82,7 @@ export const Modal: React.FC<ModalProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-              'relative z-10 w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col bg-[#0B0E17] text-[#F8FAFC] border border-[#1E293B] rounded-2xl sm:rounded-[1.25rem] shadow-[0_15px_35px_rgba(0,0,0,0.8)] overflow-hidden',
+              'relative z-10 w-full max-h-[85dvh] sm:max-h-[90dvh] flex flex-col bg-[#0B0E17] text-[#F8FAFC] border border-[#1E293B] rounded-2xl sm:rounded-[1.25rem] shadow-[0_15px_35px_rgba(0,0,0,0.8)] overflow-hidden',
               maxWidths[maxWidth],
               className
             )}
@@ -116,7 +125,8 @@ export const Modal: React.FC<ModalProps> = ({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

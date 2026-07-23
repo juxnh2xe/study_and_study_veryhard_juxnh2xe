@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/button';
 import { Flame, CheckSquare, Timer, Target, ChevronRight, X } from 'lucide-react';
@@ -9,10 +10,12 @@ import { getItem, setItem } from '@/lib/storage';
 const ONBOARDING_STORAGE_KEY = 'daybreak_study_onboarding_done';
 
 export const OnboardingModal: React.FC = () => {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
 
   useEffect(() => {
+    setMounted(true);
     const isDone = getItem<boolean>(ONBOARDING_STORAGE_KEY, false);
     if (!isDone) {
       setIsOpen(true);
@@ -65,9 +68,9 @@ export const OnboardingModal: React.FC = () => {
     setIsOpen(false);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
         <motion.div
@@ -82,7 +85,7 @@ export const OnboardingModal: React.FC = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 15 }}
           transition={{ duration: 0.2 }}
-          className="relative z-10 w-full max-w-md max-h-[85vh] sm:max-h-[90vh] flex flex-col bg-[#0B0E17] text-[#F8FAFC] border border-[#1E293B] rounded-2xl p-5 sm:p-6 shadow-[0_15px_35px_rgba(0,0,0,0.8)] space-y-4 overflow-y-auto"
+          className="relative z-10 w-full max-w-md max-h-[85dvh] sm:max-h-[90dvh] flex flex-col bg-[#0B0E17] text-[#F8FAFC] border border-[#1E293B] rounded-2xl p-5 sm:p-6 shadow-[0_15px_35px_rgba(0,0,0,0.8)] space-y-4 overflow-y-auto"
         >
           <div className="flex items-center justify-between shrink-0">
             <span className="text-xs font-bold text-[#0EA5E9]">
@@ -133,7 +136,8 @@ export const OnboardingModal: React.FC = () => {
           </Button>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

@@ -38,8 +38,8 @@ function AppContent() {
   // 1. Parent Role View
   if (userRole === 'parent') {
     return (
-      <main
-        className={`min-h-screen ${currentTheme.background} relative transition-all duration-700`}
+      <div
+        className={`h-[100dvh] max-h-[100dvh] w-full flex flex-col overflow-hidden relative ${currentTheme.background} transition-all duration-700`}
         style={{ color: currentTheme.foreground }}
       >
         {/* Dynamic Ambient Glow */}
@@ -48,26 +48,29 @@ function AppContent() {
           style={{ background: glowGradient }}
         />
 
-        <PageContainer maxWidth="md" className="relative z-10 pb-24">
-          <ParentDashboardTab
-            activeSubTab={parentTab}
-            onNavigateSubTab={(tab) => setParentTab(tab)}
-          />
-        </PageContainer>
+        {/* Scrollable Content Body */}
+        <div className="flex-1 overflow-y-auto overscroll-contain w-full relative z-10">
+          <PageContainer maxWidth="md">
+            <ParentDashboardTab
+              activeSubTab={parentTab}
+              onNavigateSubTab={(tab) => setParentTab(tab)}
+            />
+          </PageContainer>
+        </div>
 
         {/* Parent Dedicated Navigation Bar */}
         <ParentBottomNav
           activeTab={parentTab}
           onChangeTab={(tab) => setParentTab(tab)}
         />
-      </main>
+      </div>
     );
   }
 
   // 2. Student Role View (Default)
   return (
-    <main
-      className={`min-h-screen ${currentTheme.background} relative transition-all duration-700`}
+    <div
+      className={`h-[100dvh] max-h-[100dvh] w-full flex flex-col overflow-hidden relative ${currentTheme.background} transition-all duration-700`}
       style={{ color: currentTheme.foreground }}
     >
       {/* Dynamic Ambient Glow */}
@@ -76,21 +79,24 @@ function AppContent() {
         style={{ background: glowGradient }}
       />
 
-      <PageContainer maxWidth="md" className="relative z-10 pb-24">
-        {studentTab === 'dashboard' && (
-          <DashboardTab
-            onStartFocus={() => setStudentTab('focus')}
-            onNavigateTab={(tab) => setStudentTab(tab as StudentNavTab)}
-            onOpenSearch={() => setIsSearchOpen(true)}
-          />
-        )}
+      {/* Scrollable Content Body */}
+      <div className="flex-1 overflow-y-auto overscroll-contain w-full relative z-10">
+        <PageContainer maxWidth="md">
+          {studentTab === 'dashboard' && (
+            <DashboardTab
+              onStartFocus={() => setStudentTab('focus')}
+              onNavigateTab={(tab) => setStudentTab(tab as StudentNavTab)}
+              onOpenSearch={() => setIsSearchOpen(true)}
+            />
+          )}
 
-        {studentTab === 'routine' && <RoutineTab />}
+          {studentTab === 'routine' && <RoutineTab />}
 
-        {studentTab === 'focus' && <FocusTab />}
+          {studentTab === 'focus' && <FocusTab />}
 
-        {studentTab === 'profile' && <ProfileTab />}
-      </PageContainer>
+          {studentTab === 'profile' && <ProfileTab />}
+        </PageContainer>
+      </div>
 
       {/* Global Search Modal Trigger */}
       <GlobalSearchModal
@@ -103,7 +109,7 @@ function AppContent() {
         activeTab={studentTab}
         onChangeTab={(tab) => setStudentTab(tab)}
       />
-    </main>
+    </div>
   );
 }
 
